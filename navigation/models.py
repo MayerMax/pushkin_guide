@@ -13,6 +13,15 @@ class Hall:
     number: int
     title: str
 
+    def __hash__(self):
+        return hash(self.number) + hash(self.title) + hash(type(self))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
+    def __str__(self):
+        return f'Зал {self.number}. {self.title}'
+
 
 @dataclass
 class Place:
@@ -22,8 +31,8 @@ class Place:
     object: Optional[str]
     image_point_coordinates: ImagePointCoordinates
 
+    def __hash__(self):
+        return hash(self.museum) + hash(self.floor) + hash(self.area) + hash(self.object) + hash(type(self))
 
-@dataclass
-class Movement:
-    start_place: Place
-    end_place: Place
+    def __eq__(self, other):
+        return hash(self) == hash(other)

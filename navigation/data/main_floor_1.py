@@ -1,4 +1,5 @@
 from navigation.models import ImagePointCoordinates, Place, Hall
+from navigation.route_builder import RouteBuilder
 
 
 main_museum = 'Главное здание'
