@@ -1,9 +1,10 @@
 from typing import Optional
 from collections import namedtuple
-from dialogue_system.actions.abstract import DummyYouKnowWhoIsPushkin, DummyHelloAction, AbstractAction
+from dialogue_system.actions.abstract import AbstractAction, DummyHelloAction, DummyYouKnowWhoIsPushkin
+from dialogue_system.actions.faq import GeneralFAQAction
 from dialogue_system.queries.abstract import AbstractQuery
 from dialogue_system.queries.text_based import TextQuery
-from dialogue_system.responses.abstarct import AbstractResponse
+from dialogue_system.responses.abstract import AbstractResponse
 
 DynamicResponse = namedtuple('DynamicResponse', ['action', 'replier'])
 
@@ -11,7 +12,8 @@ DynamicResponse = namedtuple('DynamicResponse', ['action', 'replier'])
 class ActiveUsersManager:
     max_retry_counts = {
         DummyHelloAction: 0,
-        DummyYouKnowWhoIsPushkin: 0
+        DummyYouKnowWhoIsPushkin: 0,
+        GeneralFAQAction: 0
     }
 
     def __init__(self):
@@ -53,8 +55,10 @@ class ActiveUsersManager:
 class DialogueManager:
     def __init__(self):
         self._active_users = ActiveUsersManager()
-        self._actions_call_order = {DummyHelloAction: self.__dummy_hello_action,
-                                    DummyYouKnowWhoIsPushkin: self.__dummy_you_know_who_is_pushkin}
+        self._actions_call_order = {
+            GeneralFAQAction:  self.__general_faq_action,
+            DummyHelloAction: self.__dummy_hello_action,
+            DummyYouKnowWhoIsPushkin: self.__dummy_you_know_who_is_pushkin}
 
     def reply(self, user_id: int, query: AbstractQuery) -> AbstractResponse:
         if user_id not in self._active_users:
@@ -77,6 +81,10 @@ class DialogueManager:
         raise ValueError('Сейчас нет болталки, пришло незнакомое сообщение')
 
     @staticmethod
+    def __general_faq_action(props: dict):
+        return  GeneralFAQAction(props=props)
+
+    @staticmethod
     def __dummy_hello_action(props: dict):
         return DummyHelloAction()
 
@@ -85,10 +93,12 @@ class DialogueManager:
         return DummyYouKnowWhoIsPushkin()
 
 
-dm = DialogueManager()
-user_one, user_two = 1, 2
-print(dm.reply(user_one, TextQuery('привет')))
-print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
-print(dm.reply(user_one, TextQuery('как звали жену Пушкина?')))
-print(dm.reply(user_two, TextQuery('расскажи про пушкина')))
-print(dm.reply(user_two, TextQuery('ну и все')))
+if __name__ == '__main__':
+    dm = DialogueManager()
+    user_one, user_two = 1, 2
+    print(dm.reply(user_one, TextQuery('привет')))
+    print(dm.reply(user_one, TextQuery('Стройка еще идет?')))
+    print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
+    print(dm.reply(user_one, TextQuery('как звали жену Пушкина?')))
+    print(dm.reply(user_two, TextQuery('расскажи про пушкина')))
+    print(dm.reply(user_two, TextQuery('ну и все')))
