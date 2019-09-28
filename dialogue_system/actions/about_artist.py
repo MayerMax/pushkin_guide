@@ -44,12 +44,17 @@ class AboutArtistAction(AbstractAction):
         })['hits']['hits']
         output = random.choice(output)
         hall = output["_source"]["hall"] if output["_source"]["hall"] else random.randint(1, 25)
+        picture_name = "'{}'".format(output["_source"]["name"])
 
         text = f'{name}, основная отрасль искусства: {profession}. Страна {output["_source"]["country"]}. ' \
-               f'Одно из популярных произведений <{output["_source"]["name"]}>. Посмотреть на шедевр можно в {hall} зале'
+               f'Одно из популярных произведений {picture_name}. Посмотреть на шедевр можно в {hall} зале'
+
+        raw_text = clean_html(output['_source']['text']).split('.')
+
+        summary = '.'.join(raw_text[0:2]) if len(raw_text) >= 2 else '.'.join(raw_text) + '.'
 
         descr = clean_html(output['_source']['annotation']) if output['_source']['annotation'] != 'empty' \
-            else clean_html(output['_source']['text'])
+            else summary
 
         if output["_source"]['img']:
             yield SingleImageResponse(is_finished=True, is_successful=True, text=text,
