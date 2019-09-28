@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class Slots(Enum):
+class Slot(Enum):
     Name = 'name'  # фио
     NameProfession = 'profession'  # фотограф, скульптор, пейзажист....
