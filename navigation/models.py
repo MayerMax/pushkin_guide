@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Tuple
 from dataclasses import dataclass
 
 
@@ -6,6 +6,9 @@ from dataclasses import dataclass
 class ImagePointCoordinates:
     x: int
     y: int
+
+    def to_tuple(self) -> Tuple[int, int]:
+        return self.x, self.y
 
 
 @dataclass
