@@ -1,7 +1,7 @@
 from typing import Optional
 from collections import namedtuple
 from dialogue_system.actions.abstract import AbstractAction, DummyHelloAction, DummyYouKnowWhoIsPushkin
-from dialogue_system.actions.faq import GeneralFAQAction
+from dialogue_system.actions.faq import FAQAction
 from dialogue_system.queries.abstract import AbstractQuery
 from dialogue_system.queries.text_based import TextQuery
 from dialogue_system.responses.abstract import AbstractResponse
@@ -13,7 +13,7 @@ class ActiveUsersManager:
     max_retry_counts = {
         DummyHelloAction: 0,
         DummyYouKnowWhoIsPushkin: 0,
-        GeneralFAQAction: 0
+        FAQAction: 1
     }
 
     def __init__(self):
@@ -56,7 +56,7 @@ class DialogueManager:
     def __init__(self):
         self._active_users = ActiveUsersManager()
         self._actions_call_order = {
-            GeneralFAQAction:  self.__general_faq_action,
+            FAQAction:  self.__general_faq_action,
             DummyHelloAction: self.__dummy_hello_action,
             DummyYouKnowWhoIsPushkin: self.__dummy_you_know_who_is_pushkin}
 
@@ -82,7 +82,7 @@ class DialogueManager:
 
     @staticmethod
     def __general_faq_action(props: dict):
-        return  GeneralFAQAction(props=props)
+        return  FAQAction(props=props)
 
     @staticmethod
     def __dummy_hello_action(props: dict):
@@ -97,8 +97,10 @@ if __name__ == '__main__':
     dm = DialogueManager()
     user_one, user_two = 1, 2
     print(dm.reply(user_one, TextQuery('привет')))
-    print(dm.reply(user_one, TextQuery('Стройка еще идет?')))
-    print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
-    print(dm.reply(user_one, TextQuery('как звали жену Пушкина?')))
-    print(dm.reply(user_two, TextQuery('расскажи про пушкина')))
-    print(dm.reply(user_two, TextQuery('ну и все')))
+    print(dm.reply(user_one, TextQuery('До скольки работает музей?')))
+    # print(dm.reply(user_one, TextQuery('Не знаю какой')))
+    print(dm.reply(user_one, TextQuery('привет')))
+    # print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
+    # print(dm.reply(user_one, TextQuery('как звали жену Пушкина?')))
+    # print(dm.reply(user_two, TextQuery('расскажи про пушкина')))
+    # print(dm.reply(user_two, TextQuery('ну и все')))
