@@ -16,11 +16,11 @@ class AbstractAction(metaclass=abc.ABCMeta):
 
     def __init__(self, initial_query: object = None, props: dict = None, slots: Dict[Slot, str] = None):
         self._props = props
-        self._slots = slots
+        self._initial_slots = slots
         self._initial_query = initial_query
 
     @abc.abstractclassmethod
-    def activation_response(self, initial_query: object, slots: Dict[Slot, str] = None) -> ActivationResponse:  # TODO rename
+    def activation_response(self, initial_query: object, slots: Dict[Slot, str]) -> ActivationResponse:  # TODO rename
         pass
 
     @abc.abstractmethod
@@ -32,7 +32,7 @@ class DummyHelloAction(AbstractAction):
     recognized_types = [TextQuery]
 
     @classmethod
-    def activation_response(cls, initial_query: TextQuery, slots: Dict[Slot, str] = None) -> ActivationResponse:
+    def activation_response(cls, initial_query: TextQuery, slots: Dict[Slot, str]) -> ActivationResponse:
         if initial_query.lower() in ['привет', 'здорово']:
             return ActivationResponse(intent_detected=True)
         # TODO
@@ -53,7 +53,7 @@ class DummyYouKnowWhoIsPushkin(AbstractAction):
         }
 
     @classmethod
-    def activation_response(cls, initial_query: TextQuery, slots: Dict[Slot, str] = None) -> ActivationResponse:
+    def activation_response(cls, initial_query: TextQuery, slots: Dict[Slot, str]) -> ActivationResponse:
         if initial_query.lower() in ['кто такой пушкин', 'расскажи про пушкина']:
             return ActivationResponse(intent_detected=True)
 

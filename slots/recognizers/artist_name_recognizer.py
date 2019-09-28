@@ -34,6 +34,6 @@ class ArtistNameRecognizer(AbstractSlotRecognizer):
             if output[0]['_score'] < MIN_THRESHOLD_SCORE:
                 return {}
 
-            return {Slot.Name: output[0]['about_author']['name'],
-                    Slot.NameProfession: output[0]['type']}
+            return {Slot.Name: output[0]['_source']['about_author']['name'],
+                    Slot.NameProfession: output[0]['_source']['type']}
         return {}
