@@ -18,7 +18,7 @@ class AbstractAction(metaclass=abc.ABCMeta):
         self._initial_query = initial_query
 
     @abc.abstractclassmethod
-    def activation_response(self, initial_query: object, slots: Dict[Slot, str]) -> ActivationResponse:  # TODO rename
+    def activation_response(cls, initial_query: object, slots: Dict[Slot, str]) -> ActivationResponse:  # TODO rename
         pass
 
     @abc.abstractmethod
