@@ -1,11 +1,12 @@
 from dialogue_system.queries.abstract import AbstractQuery
-from slots.recognizers.artist_name_recognizer import ArtistNameRecognizer
 from slots.recognizers.address_recognizer import AddressRecognizer
+from slots.recognizers.artist_name_recognizer import ArtistFuzzyNameRecognizer
 
 
 class SlotsFiller:
     def __init__(self):
         self._available_recognizers = [
+            ArtistFuzzyNameRecognizer(use_natasha=True) # when deploy need to configure
             ArtistNameRecognizer(), # when deploy need to configure
             AddressRecognizer()
         ]

@@ -24,6 +24,7 @@ class AboutArtistAction(AbstractAction):
                 return ActivationResponse(intent_detected=True)
 
     def reply(self, slots: Dict[Slot, str]) -> SingleTextResponse:
+
         name, profession = self._initial_slots[Slot.Name], self._initial_slots[Slot.NameProfession]
 
         yield SingleTextResponse(is_finished=True, is_successful=True, text=f'{name}, {profession}')
