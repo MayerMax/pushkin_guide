@@ -1,11 +1,11 @@
 from typing import Optional
 from collections import namedtuple
-
+from dialogue_system.actions.abstract import AbstractAction, DummyHelloAction, DummyYouKnowWhoIsPushkin
+from dialogue_system.actions.faq import FAQAction
 from dialogue_system.actions.about_artist import AboutArtistAction
-from dialogue_system.actions.abstract import DummyYouKnowWhoIsPushkin, DummyHelloAction, AbstractAction
 from dialogue_system.queries.abstract import AbstractQuery
 from dialogue_system.queries.text_based import TextQuery
-from dialogue_system.responses.abstarct import AbstractResponse
+from dialogue_system.responses.abstract import AbstractResponse
 from typing import Dict
 
 from slots.slot import Slot
@@ -18,6 +18,7 @@ class ActiveUsersManager:
     max_retry_counts = {
         DummyHelloAction: 0,
         DummyYouKnowWhoIsPushkin: 0,
+        FAQAction: 1,
         AboutArtistAction: 0
     }
 
@@ -65,6 +66,7 @@ class DialogueManager:
 
         self._actions_call_order = {DummyHelloAction: self.__dummy_hello_action,
                                     DummyYouKnowWhoIsPushkin: self.__dummy_you_know_who_is_pushkin,
+                                    FAQAction: self.__general_faq_action,
                                     AboutArtistAction: self._get_about_artist_action}
 
     def reply(self, user_id: int, query: AbstractQuery) -> AbstractResponse:
@@ -90,6 +92,10 @@ class DialogueManager:
 
                     # TODO видимо, самым последним вариантов будет болталка, которая всегда сработает
         raise ValueError('Сейчас нет болталки, пришло незнакомое сообщение')
+
+    @staticmethod
+    def __general_faq_action(props: dict, slots: Dict[Slot, str]):
+        return  FAQAction(props=props)
 
     @staticmethod
     def __dummy_hello_action(props: dict, slots: Dict[Slot, str]):

@@ -3,12 +3,10 @@ from typing import Union, Dict
 from collections import namedtuple
 
 from dialogue_system.queries.text_based import TextQuery
-from dialogue_system.responses.abstarct import AbstractResponse
+from dialogue_system.responses.abstract import AbstractResponse, ActivationResponse
 from dialogue_system.responses.text_based import SingleTextResponse, SingleTextWithFactAttachments
 from slots.slot import Slot
 
-ActivationResponse = namedtuple('ActivationResponse', ['intent_detected', 'props'])
-ActivationResponse.__new__.__defaults__ = (False, None)
 
 
 class AbstractAction(metaclass=abc.ABCMeta):
