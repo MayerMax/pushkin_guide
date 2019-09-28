@@ -6,8 +6,7 @@ from slots.recognizers.artist_name_recognizer import ArtistFuzzyNameRecognizer
 class SlotsFiller:
     def __init__(self):
         self._available_recognizers = [
-            ArtistFuzzyNameRecognizer(use_natasha=True) # when deploy need to configure
-            ArtistNameRecognizer(), # when deploy need to configure
+            ArtistFuzzyNameRecognizer(use_natasha=True), # when deploy need to configure
             AddressRecognizer()
         ]
 

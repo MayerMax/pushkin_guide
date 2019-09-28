@@ -121,10 +121,10 @@ if __name__ == '__main__':
     dm = DialogueManager()
     user_one, user_two = 1, 2
 
-    # print(dm.reply(user_one, TextQuery('расскажи про альфреда де дре')))
-    print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
-    print(dm.reply(user_one, TextQuery('как проехать до музея?')))
-    print(dm.reply(user_one, TextQuery('красная площадь')))
+    print(dm.reply(user_one, TextQuery('расскажи про альфреда де дре')))
+    # print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
+    # print(dm.reply(user_one, TextQuery('как проехать до музея?')))
+    # print(dm.reply(user_one, TextQuery('красная площадь')))
 
     # print(dm.reply(user_one, TextQuery('как звали жену Пушкина?')))
     # print(dm.reply(user_two, TextQuery('расскажи про пушкина')))
