@@ -47,10 +47,11 @@ for element in data_as_list:
         continue
     new_objects.append(new_object)
 
+print(set([x['material'] for x in new_objects]))
 # print([x['graphics_type'] for x in new_objects if x['graphics_type'] != 'empty' ][:10])
 
-from elasticsearch import Elasticsearch, helpers
+# from elasticsearch import Elasticsearch, helpers
 # #
-es = Elasticsearch()
+# es = Elasticsearch()
 # #
-index = helpers.bulk(es, new_objects, index='collection-index', doc_type='people')
+# index = helpers.bulk(es, new_objects, index='collection-index', doc_type='people')
