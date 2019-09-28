@@ -1,6 +1,6 @@
 from typing import List
 
-from dialogue_system.responses.abstarct import AbstractResponse
+from dialogue_system.responses.abstract import AbstractResponse
 
 
 class SingleTextResponse(AbstractResponse):
