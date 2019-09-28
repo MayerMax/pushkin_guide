@@ -2,9 +2,9 @@ from typing import Optional
 from collections import namedtuple
 from dialogue_system.actions.abstract import AbstractAction, DummyHelloAction, DummyYouKnowWhoIsPushkin
 from dialogue_system.actions.faq import FAQAction
+from dialogue_system.actions.about_artist import AboutArtistAction
 from dialogue_system.queries.abstract import AbstractQuery
 from dialogue_system.queries.text_based import TextQuery
-from dialogue_system.responses.abstract import AbstractResponse
 from dialogue_system.responses.abstract import AbstractResponse
 from typing import Dict
 
@@ -18,8 +18,7 @@ class ActiveUsersManager:
     max_retry_counts = {
         DummyHelloAction: 0,
         DummyYouKnowWhoIsPushkin: 0,
-        FAQAction: 1
-        DummyYouKnowWhoIsPushkin: 0,
+        FAQAction: 1,
         AboutArtistAction: 0
     }
 
@@ -95,7 +94,7 @@ class DialogueManager:
         raise ValueError('Сейчас нет болталки, пришло незнакомое сообщение')
 
     @staticmethod
-    def __general_faq_action(props: dict):
+    def __general_faq_action(props: dict, slots: Dict[Slot, str]):
         return  FAQAction(props=props)
 
     @staticmethod

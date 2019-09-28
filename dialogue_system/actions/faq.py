@@ -1,13 +1,16 @@
 import json
 import textdistance
 
+from typing import Dict
+
 from dialogue_system.actions.abstract import AbstractAction, ActivationResponse
 from dialogue_system.queries.text_based import TextQuery
 from dialogue_system.responses.text_based import SingleTextResponse, SingleTextWithFactAttachments
 from dialogue_system.matchers.similarity import is_matching
+from slots.slot import Slot
 
 
-FAQ_DATASET_PATH = ''
+FAQ_DATASET_PATH = 'data/json/faq.json'
 
 
 class FAQDataset():
@@ -44,7 +47,7 @@ class FAQAction(AbstractAction):
         return False
 
     @classmethod
-    def activation_response(cls, initial_query: TextQuery) -> ActivationResponse:
+    def activation_response(cls, initial_query: TextQuery, slots: Dict[Slot, str]) -> ActivationResponse:
         for question_category in cls._faq_dataset.responses:
             if cls._is_matching_question_category(question_category, initial_query):
                 is_museum_specific = cls._faq_dataset.responses[question_category]['is_museum_specific']
@@ -72,15 +75,3 @@ class FAQAction(AbstractAction):
             yield SingleTextResponse(is_finished=True,
                                      is_successful=True,
                                      text=self._faq_dataset.responses[self._props['question_category']]['response'])
-
-
-class MuseumSpecificFAQAction(AbstractAction):
-    recognized_types = [TextQuery]
-    _faq_dataset = FAQDataset()
-
-    @classmethod
-    def activation_response(self, initial_query: object) -> ActivationResponse:
-        pass
-
-    def reply(self, query: TextQuery = None) -> SingleTextResponse:
-        pass
