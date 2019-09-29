@@ -12,3 +12,4 @@ class Slot(Enum):
     ArtType = 'type'  # скульптура, фотография, ...
     Image = 'img'
     Country = 'country'
+    EventName = 'event_name'

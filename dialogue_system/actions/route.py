@@ -25,7 +25,7 @@ class RouteAction(AbstractAction):
 
     @classmethod
     def reply(cls, slots: Dict[Slot, str], user_id=None):
-        address = slots[Slot.Address]
+        address = slots.get(Slot.Address)
         if not address:
             query, slots = yield SingleTextResponse(is_finished=False,
                                              is_successful=True,

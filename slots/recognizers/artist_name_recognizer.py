@@ -23,8 +23,10 @@ class NatashaWrapper:
         if not matches:
             return ''
         match = matches[0].fact
-        if not match.last:
+
+        if match.last:
             return '{} {}'.format(match.first if match.first else '', match.last).strip()
+        return ''
 
 
 class ArtistFuzzyNameRecognizer(AbstractSlotRecognizer):
@@ -59,6 +61,7 @@ class ArtistFuzzyNameRecognizer(AbstractSlotRecognizer):
                 }
             }
         })['hits']['hits']
+
         if output:
             if q:
                 if output[0]['_score'] < MIN_THRESHOLD_PURE:

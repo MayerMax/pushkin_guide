@@ -14,7 +14,7 @@ from utils import clean_html
 class AboutArtistAction(AbstractAction):
     recognized_types = [TextQuery]
     triggering_phrases = ['расскажи', 'хочу послушать о', 'есть ли в музее картина', 'что ты знаешь о',
-                          'хочу узнать про']
+                          'хочу узнать про', 'кто такой']
 
     def __init__(self, user_id, props: dict, slots: Dict[Slot, str], es_params: dict = None):
         super().__init__(user_id=user_id, props=props, slots=slots)
@@ -43,8 +43,9 @@ class AboutArtistAction(AbstractAction):
             }
         })['hits']['hits']
         output = random.choice(output)
+
         hall = output["_source"]["hall"] if output["_source"]["hall"] else random.randint(1, 25)
-        picture_name = "'{}'".format(output["_source"]["name"])
+        picture_name = "'{}'".format(output["_source"]["art_name"])
 
         text = f'{name}, основная отрасль искусства: {profession}. Страна {output["_source"]["country"]}. ' \
                f'Одно из популярных произведений {picture_name}. Посмотреть на шедевр можно в {hall} зале'
@@ -58,6 +59,6 @@ class AboutArtistAction(AbstractAction):
 
         if output["_source"]['img']:
             yield SingleImageResponse(is_finished=True, is_successful=True, text=text,
-                                      img_url=output["_source"]['img'], img_description=descr)
+                                      img_url=f'https://pushkinmuseum.art{output["_source"]["img"]}', img_description=descr)
         else:
             yield SingleTextResponse(is_finished=True, is_successful=True, text=text)
