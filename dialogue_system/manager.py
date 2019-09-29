@@ -144,7 +144,7 @@ if __name__ == '__main__':
     dm = DialogueManager()
     user_one, user_two = '1', '2'
 
-    print(dm.reply(user_one, TextQuery('расскажи про Успение Богоматери')))
+    # print(dm.reply(user_one, TextQuery('расскажи про Успение Богоматери')))
     # print(dm.reply(user_one, TextQuery('как попасть в Искусство Древнего Египта?')))
 
     # print(dm.reply(user_one, TextQuery('расскажи про альфреда де дре')))

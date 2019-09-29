@@ -15,8 +15,8 @@ class ExpoInfoMaterialAction(AbstractAction):
     triggering_phrases = ['хочу найти что-то', 'хочу посмотреть', 'что посмотреть', 'хочу найти что-нибудь', 'xочу найти что-то об',
                           'что в музее есть', 'где посомтреть', 'расскажи про', 'что есть по', 'что есть из']
 
-    def __init__(self, props: dict, slots: Dict[Slot, str], es_params: dict = None):
-        super().__init__(props=props, slots=slots)
+    def __init__(self, props: dict, slots: Dict[Slot, str], es_params: dict = None, user_id=None):
+        super().__init__(props=props, slots=slots, user_id=user_id)
         self._es = Elasticsearch() if not es_params else Elasticsearch(es_params)  # need to configure
 
     @classmethod
@@ -27,7 +27,7 @@ class ExpoInfoMaterialAction(AbstractAction):
             if phrase in initial_query.text:
                 return ActivationResponse(intent_detected=True)
 
-    def reply(self, slots: Dict[Slot, str]) -> Union[SingleTextResponse, SingleImageResponse]:
+    def reply(self, slots: Dict[Slot, str], user_id=None) -> Union[SingleTextResponse, SingleImageResponse]:
         material = slots[Slot.Material]
         if Slot.Name in slots:
             pass
