@@ -1,6 +1,6 @@
 import json
 
-with open('./data/objects.json', 'r') as f:
+with open('data/objects.json', 'r') as f:
     data = json.load(f)
 #
 data_as_list = [data[key] for key in data]

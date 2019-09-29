@@ -16,8 +16,8 @@ class AboutCollectionObject(AbstractAction):
     triggering_phrases = ['расскажи про картину', 'где находится картина', 'откуда в музее картина', 'где картина',
                           'расскажи про', 'хочу узнать о картине', 'дай информации о картине', 'где расположена картина']
 
-    def __init__(self, props: dict, slots: Dict[Slot, str], es_params: dict = None):
-        super().__init__(props=props, slots=slots)
+    def __init__(self, props: dict, slots: Dict[Slot, str], es_params: dict = None, user_id=None):
+        super().__init__(props=props, slots=slots, user_id=user_id)
         self._es = Elasticsearch() if not es_params else Elasticsearch(es_params)
 
     @classmethod
@@ -28,7 +28,7 @@ class AboutCollectionObject(AbstractAction):
             if phrase in initial_query.text:
                 return ActivationResponse(intent_detected=True)
 
-    def reply(self, slots: Dict[Slot, str]) -> Union[SingleTextResponse, SingleImageResponse]:
+    def reply(self, slots: Dict[Slot, str], user_id=None) -> Union[SingleTextResponse, SingleImageResponse]:
         art_name = self._initial_slots[Slot.ArtName]
 
         output = self._es.search(index='collection-index', body={
