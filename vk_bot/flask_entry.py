@@ -15,8 +15,7 @@ def send_text_msg(text: str, user_id: int):
         'user_id': user_id,
         'peer_id': -187015645,
         'access_token': API_TOKEN,
-        'random_id': random.randint(10000, 1000000000000),
-        'attachment': 'photo53245164_457240499_58d6e749756d56b766'
+        'random_id': random.randint(10000, 1000000000000)
     }
     x = requests.post(f"https://api.vk.com/method/messages.send?", data=params)
     pprint.pprint(x.json())
@@ -32,7 +31,8 @@ def send_msg_with_img(text: str, img_url: str):
 def send_message(response: VkResponse):
     if response.image_url:
         pass
-    send_text_msg(response.text, response.user_id)
+    if response.text:
+        send_text_msg(response.text, response.user_id)
 
 
 def handle_user_message(json_data) -> str:

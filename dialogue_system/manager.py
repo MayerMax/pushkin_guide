@@ -9,8 +9,9 @@ from dialogue_system.actions.about_artist import AboutArtistAction
 from dialogue_system.actions.route import RouteAction
 from dialogue_system.actions.navigation import InsideNavigationAction
 from dialogue_system.queries.abstract import AbstractQuery
-from dialogue_system.queries.text_based import TextQuery
 from dialogue_system.responses.abstract import AbstractResponse
+from dialogue_system.responses.text_based import SingleTextResponse
+
 from typing import Dict
 
 from slots.slot import Slot
@@ -27,7 +28,6 @@ class ActiveUsersManager:
         AboutArtistAction: 0,
         RouteAction: 0,
         InsideNavigationAction: 4,
-        RouteAction: 0,
         ExpoInfoMaterialAction: 0,
         AboutCollectionObject: 0
     }
@@ -84,16 +84,20 @@ class DialogueManager:
                                     ExpoInfoMaterialAction: self._get_expo_info}
 
     def reply(self, user_id: str, query: AbstractQuery) -> AbstractResponse:
-        if user_id not in self._active_users:
-            return self._active_users.add(user_id,
-                                          self.__find_suitable_action(user_id, query),
-                                          self._slot_filler.enrich(query))
-        else:
-            new_slots = self._slot_filler.enrich(query)
-            response = self._active_users.get_response(user_id, query, new_slots)
-            if not response:
-                return self.reply(user_id, query)
-            return response
+        try:
+            if user_id not in self._active_users:
+                return self._active_users.add(user_id,
+                                              self.__find_suitable_action(user_id, query),
+                                              self._slot_filler.enrich(query))
+            else:
+                new_slots = self._slot_filler.enrich(query)
+                response = self._active_users.get_response(user_id, query, new_slots)
+                if not response:
+                    return self.reply(user_id, query)
+                return response
+        except:
+            return SingleTextResponse(True, True,
+                                      'Извините, что-то пошло не так. Спросите меня, пожалуйста, по-другому')
 
     def __find_suitable_action(self, user_id, query: AbstractQuery) -> AbstractAction:
         slots = self._slot_filler.enrich(query)
