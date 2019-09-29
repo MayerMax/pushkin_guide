@@ -1,5 +1,7 @@
 from typing import Optional
 from collections import namedtuple
+
+from dialogue_system.actions.about_collection import AboutCollectionObject
 from dialogue_system.actions.abstract import AbstractAction, DummyHelloAction, DummyYouKnowWhoIsPushkin
 from dialogue_system.actions.expo_info import ExpoInfoMaterialAction
 from dialogue_system.actions.faq import FAQAction
@@ -23,7 +25,8 @@ class ActiveUsersManager:
         FAQAction: 1,
         AboutArtistAction: 0,
         RouteAction: 0,
-        ExpoInfoMaterialAction: 0
+        ExpoInfoMaterialAction: 0,
+        AboutCollectionObject: 0
     }
 
     def __init__(self):
@@ -71,6 +74,7 @@ class DialogueManager:
         self._actions_call_order = {DummyHelloAction: self.__dummy_hello_action,
                                     DummyYouKnowWhoIsPushkin: self.__dummy_you_know_who_is_pushkin,
                                     FAQAction: self.__general_faq_action,
+                                    AboutCollectionObject: self._get_about_collection_action,
                                     AboutArtistAction: self._get_about_artist_action,
                                     RouteAction: self._get_route_action,
                                     ExpoInfoMaterialAction: self._get_expo_info}
@@ -123,12 +127,15 @@ class DialogueManager:
     def _get_expo_info(props:dict, slots: Dict[Slot, str]):
         return ExpoInfoMaterialAction(props=props, slots=slots)
 
+    @staticmethod
+    def _get_about_collection_action(props: dict, slots: Dict[Slot, str]):
+        return AboutCollectionObject(props=props, slots=slots)
 
 if __name__ == '__main__':
     dm = DialogueManager()
     user_one, user_two = 1, 2
 
-    print(dm.reply(user_one, TextQuery('откуда мать вашу в музее картина «Девочка на шаре»')))
+    print(dm.reply(user_one, TextQuery('расскажи про Успение Богоматери')))
     # print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
     # print(dm.reply(user_one, TextQuery('как проехать до музея?')))
     # print(dm.reply(user_one, TextQuery('красная площадь')))

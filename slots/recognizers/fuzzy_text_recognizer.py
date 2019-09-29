@@ -21,7 +21,6 @@ class FuzzyTextRecognizer(AbstractSlotRecognizer):
         self._min_threshold = min_threshold
 
     def recognize(self, query: TextQuery) -> typing.Dict[Slot, str]:
-        print(self._search_slot.value)
         output = self._es.search(index='collection-index', body={
             "query": {
                 "match": {
