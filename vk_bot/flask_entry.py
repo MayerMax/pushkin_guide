@@ -13,7 +13,7 @@ def send_text_msg(text: str, user_id: int):
         'v': '5.101',
         'message': text,
         'user_id': user_id,
-        'peer_id': -187015645,
+        'peer_id': user_id,
         'access_token': API_TOKEN,
         'random_id': random.randint(10000, 1000000000000)
     }
@@ -23,7 +23,7 @@ def send_text_msg(text: str, user_id: int):
 
 def send_msg_with_img(text: str, img_url: str):
     server_for_img = requests.post(f"https://api.vk.com/method/photos.getMessagesUploadServer?",
-                                   data={'peer_id': -187015645, 'access_token': API_TOKEN, 'v': '5.101'})
+                                   data={'peer_id': 53245164, 'access_token': API_TOKEN, 'v': '5.101'})
     pprint.pprint(server_for_img.json())
     # requests.post(f"https://api.vk.com/method/photos.getMessagesUploadServer?")
 
@@ -74,5 +74,5 @@ def run(host: str = '0.0.0.0', port: int = 80, is_debug=False):
 
 
 if __name__ == '__main__':
-    send_msg_with_img('', 53245164)
+    send_text_msg('ыф', 53245164)
     # run()

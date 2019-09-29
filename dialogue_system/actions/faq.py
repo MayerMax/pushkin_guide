@@ -1,5 +1,6 @@
 import json
 import textdistance
+import pathlib
 
 from typing import Dict
 
@@ -8,15 +9,13 @@ from dialogue_system.queries.text_based import TextQuery
 from dialogue_system.responses.text_based import SingleTextResponse, SingleTextWithFactAttachments
 from dialogue_system.matchers.similarity import is_matching
 from slots.slot import Slot
-
-
-FAQ_DATASET_PATH = 'data/json/faq.json'
+from data import FAQ_DATASET_PATH
 
 
 class FAQDataset():
     def __init__(self):
         self._responses = {}
-        with open(FAQ_DATASET_PATH) as f:
+        with open(FAQ_DATASET_PATH, encoding='utf-8') as f:
             responses_json = json.load(f)
 
         for question_category in responses_json['question_category']:
