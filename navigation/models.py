@@ -13,7 +13,7 @@ class ImagePointCoordinates:
 
 @dataclass
 class Hall:
-    number: int
+    number: str
     title: str
 
     def __hash__(self):

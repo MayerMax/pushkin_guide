@@ -16,8 +16,8 @@ class AboutArtistAction(AbstractAction):
     triggering_phrases = ['расскажи', 'хочу послушать о', 'есть ли в музее картина', 'что ты знаешь о',
                           'хочу узнать про']
 
-    def __init__(self, props: dict, slots: Dict[Slot, str], es_params: dict = None):
-        super().__init__(props=props, slots=slots)
+    def __init__(self, user_id, props: dict, slots: Dict[Slot, str], es_params: dict = None):
+        super().__init__(user_id=user_id, props=props, slots=slots)
         self._es = Elasticsearch() if not es_params else Elasticsearch(es_params)# need to configure
 
     @classmethod
@@ -29,7 +29,7 @@ class AboutArtistAction(AbstractAction):
             if phrase in initial_query.text:
                 return ActivationResponse(intent_detected=True)
 
-    def reply(self, slots: Dict[Slot, str]) -> Union[SingleTextResponse, SingleImageResponse]:
+    def reply(self, slots: Dict[Slot, str], user_id=None) -> Union[SingleTextResponse, SingleImageResponse]:
 
         name, profession = self._initial_slots[Slot.Name], self._initial_slots[Slot.NameProfession]
         output = self._es.search(index='collection-index', body={

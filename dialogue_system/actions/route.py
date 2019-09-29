@@ -13,7 +13,7 @@ class RouteAction(AbstractAction):
     @classmethod
     def activation_response(cls, initial_query: TextQuery, slots: Dict[Slot, str]) -> ActivationResponse:
         for phrase in RouteAction.triggering_phrases:
-            if phrase in initial_query:
+            if phrase in initial_query.lower():
                 return ActivationResponse(intent_detected=True)
 
     @classmethod
@@ -24,10 +24,10 @@ class RouteAction(AbstractAction):
 Ждем вас в гости!'''
 
     @classmethod
-    def reply(cls, slots: Dict[Slot, str]):
+    def reply(cls, slots: Dict[Slot, str], user_id=None):
         address = slots[Slot.Address]
         if not address:
-            query = yield SingleTextResponse(is_finished=False,
+            query, slots = yield SingleTextResponse(is_finished=False,
                                              is_successful=True,
                                              text='Пожалуйста, уточните место отправления.')
             yield SingleTextResponse(is_finished=True,
