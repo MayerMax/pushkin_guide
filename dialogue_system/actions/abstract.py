@@ -12,7 +12,8 @@ from slots.slot import Slot
 class AbstractAction(metaclass=abc.ABCMeta):
     recognized_types = []  # возможно, дальше нужен будет enum
 
-    def __init__(self, initial_query: object = None, props: dict = None, slots: Dict[Slot, str] = None):
+    def __init__(self, user_id, initial_query: object = None, props: dict = None, slots: Dict[Slot, str] = None):
+        self._user_id = user_id
         self._props = props
         self._initial_slots = slots
         self._initial_query = initial_query
@@ -22,7 +23,7 @@ class AbstractAction(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def reply(self, slots: Dict[Slot, str]) -> AbstractResponse:
+    def reply(self, slots: Dict[Slot, str], user_id=None) -> AbstractResponse:
         pass
 
 
@@ -35,7 +36,7 @@ class DummyHelloAction(AbstractAction):
             return ActivationResponse(intent_detected=True)
         # TODO
 
-    def reply(self, slots: Dict[Slot, str]) -> SingleTextResponse:
+    def reply(self, slots: Dict[Slot, str], user_id=None) -> SingleTextResponse:
         yield SingleTextResponse(is_finished=True, is_successful=True, text='Привет! Хорошего дня!')
 
 
@@ -55,7 +56,7 @@ class DummyYouKnowWhoIsPushkin(AbstractAction):
         if initial_query.lower() in ['кто такой пушкин', 'расскажи про пушкина']:
             return ActivationResponse(intent_detected=True)
 
-    def reply(self, slots: Dict[Slot, str]) -> Union[SingleTextWithFactAttachments, SingleTextResponse]:
+    def reply(self, slots: Dict[Slot, str], user_id=None) -> Union[SingleTextWithFactAttachments, SingleTextResponse]:
         query, _ = yield SingleTextWithFactAttachments(is_finished=False, is_successful=True,
                                                     text='Александ Сергеевич Пушкин - великий русский писатель',
                                                     attachments=list(self._qa.keys()))

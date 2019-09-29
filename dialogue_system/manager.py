@@ -1,9 +1,13 @@
 from typing import Optional
 from collections import namedtuple
+
+from dialogue_system.actions.about_collection import AboutCollectionObject
 from dialogue_system.actions.abstract import AbstractAction, DummyHelloAction, DummyYouKnowWhoIsPushkin
+from dialogue_system.actions.expo_info import ExpoInfoMaterialAction
 from dialogue_system.actions.faq import FAQAction
 from dialogue_system.actions.about_artist import AboutArtistAction
 from dialogue_system.actions.route import RouteAction
+from dialogue_system.actions.navigation import InsideNavigationAction
 from dialogue_system.queries.abstract import AbstractQuery
 from dialogue_system.queries.text_based import TextQuery
 from dialogue_system.responses.abstract import AbstractResponse
@@ -21,44 +25,48 @@ class ActiveUsersManager:
         DummyYouKnowWhoIsPushkin: 0,
         FAQAction: 1,
         AboutArtistAction: 0,
-        RouteAction: 0
+        RouteAction: 0,
+        InsideNavigationAction: 4,
+        RouteAction: 0,
+        ExpoInfoMaterialAction: 0,
+        AboutCollectionObject: 0
     }
 
     def __init__(self):
         self._user_action_dict = {}
         self._num_negative_counts_to_call = {}
 
-    def add(self, user: int, action: AbstractAction, slots: Dict[Slot, str]) -> AbstractResponse:
-        dr = DynamicResponse(action, action.reply(slots))
+    def add(self, user_id: int, action: AbstractAction, slots: Dict[Slot, str]) -> AbstractResponse:
+        dr = DynamicResponse(action, action.reply(slots, user_id=user_id))
         response: AbstractResponse = next(dr.replier)
         if not response.is_finished:
-            self._user_action_dict[user] = dr
-            self._num_negative_counts_to_call[user] = 0
+            self._user_action_dict[user_id] = dr
+            self._num_negative_counts_to_call[user_id] = 0
         return response
 
-    def get_response(self, user: int, query: AbstractQuery, slots: Dict[Slot, str]) -> Optional[AbstractResponse]:
-        response: AbstractResponse = self._user_action_dict[user].replier.send((query, slots))
+    def get_response(self, user_id: int, query: AbstractQuery, slots: Dict[Slot, str]) -> Optional[AbstractResponse]:
+        response: AbstractResponse = self._user_action_dict[user_id].replier.send((query, slots))
 
         if response.is_finished:
-            self.remove(user)
+            self.remove(user_id)
             return response
 
         if not response.is_successful:
-            self._num_negative_counts_to_call[user] += 1
+            self._num_negative_counts_to_call[user_id] += 1
 
-        if self._num_negative_counts_to_call[user] > self.max_retry_counts[type(self._user_action_dict[user].action)]:
-            self.remove(user)
+        if self._num_negative_counts_to_call[user_id] > self.max_retry_counts[type(self._user_action_dict[user_id].action)]:
+            self.remove(user_id)
             return None
 
         return response
 
-    def remove(self, user):
-        if user in self._user_action_dict:
-            self._user_action_dict.pop(user)
-            self._num_negative_counts_to_call.pop(user)
+    def remove(self, user_id):
+        if user_id in self._user_action_dict:
+            self._user_action_dict.pop(user_id)
+            self._num_negative_counts_to_call.pop(user_id)
 
-    def __contains__(self, user: int):
-        return user in self._user_action_dict
+    def __contains__(self, user_id: int):
+        return user_id in self._user_action_dict
 
 
 class DialogueManager:
@@ -69,13 +77,16 @@ class DialogueManager:
         self._actions_call_order = {DummyHelloAction: self.__dummy_hello_action,
                                     DummyYouKnowWhoIsPushkin: self.__dummy_you_know_who_is_pushkin,
                                     FAQAction: self.__general_faq_action,
+                                    AboutCollectionObject: self._get_about_collection_action,
                                     AboutArtistAction: self._get_about_artist_action,
-                                    RouteAction: self._get_route_action}
+                                    RouteAction: self._get_route_action,
+                                    InsideNavigationAction: self._get_inside_navigation_action,
+                                    ExpoInfoMaterialAction: self._get_expo_info}
 
-    def reply(self, user_id: int, query: AbstractQuery) -> AbstractResponse:
+    def reply(self, user_id: str, query: AbstractQuery) -> AbstractResponse:
         if user_id not in self._active_users:
             return self._active_users.add(user_id,
-                                          self.__find_suitable_action(query),
+                                          self.__find_suitable_action(user_id, query),
                                           self._slot_filler.enrich(query))
         else:
             new_slots = self._slot_filler.enrich(query)
@@ -84,44 +95,59 @@ class DialogueManager:
                 return self.reply(user_id, query)
             return response
 
-    def __find_suitable_action(self, query: AbstractQuery) -> AbstractAction:
+    def __find_suitable_action(self, user_id, query: AbstractQuery) -> AbstractAction:
         slots = self._slot_filler.enrich(query)
         for action_class in self._actions_call_order:
             if type(query) in action_class.recognized_types:
                 activation_response = action_class.activation_response(query, slots)
                 if activation_response:  # TODO always return activation
                     # разные action-ы имеют разные конструкторы
-                    return self._actions_call_order[action_class](props=activation_response.props, slots=slots)
+                    return self._actions_call_order[action_class](props=activation_response.props, slots=slots,
+                                                                  user_id=user_id)
 
                     # TODO видимо, самым последним вариантов будет болталка, которая всегда сработает
         raise ValueError('Сейчас нет болталки, пришло незнакомое сообщение')
 
     @staticmethod
-    def __general_faq_action(props: dict, slots: Dict[Slot, str]):
-        return  FAQAction(props=props)
+    def __general_faq_action(user_id, props: dict, slots: Dict[Slot, str]):
+        return  FAQAction(user_id=user_id, props=props)
 
     @staticmethod
-    def __dummy_hello_action(props: dict, slots: Dict[Slot, str]):
-        return DummyHelloAction()
+    def __dummy_hello_action(user_id, props: dict, slots: Dict[Slot, str]):
+        return DummyHelloAction(user_id=user_id)
 
     @staticmethod
-    def __dummy_you_know_who_is_pushkin(props: dict, slots: Dict[Slot, str]):
+    def __dummy_you_know_who_is_pushkin(user_id, props: dict, slots: Dict[Slot, str]):
         return DummyYouKnowWhoIsPushkin()
 
     @staticmethod
-    def _get_about_artist_action(props: dict, slots: Dict[Slot, str]):
-        return AboutArtistAction(props=props, slots=slots)
+    def _get_about_artist_action(user_id, props: dict, slots: Dict[Slot, str]):
+        return AboutArtistAction(user_id=user_id, props=props, slots=slots)
 
     @staticmethod
-    def _get_route_action(props:dict, slots: Dict[Slot, str]):
-        return RouteAction(props=props, slots=slots)
+    def _get_route_action(user_id, props:dict, slots: Dict[Slot, str]):
+        return RouteAction(user_id=user_id, props=props, slots=slots)
 
+    @staticmethod
+    def _get_inside_navigation_action(user_id, props:dict, slots: Dict[Slot, str]):
+        return InsideNavigationAction(user_id=user_id, props=props, slots=slots)
+
+    @staticmethod
+    def _get_expo_info(user_id, props:dict, slots: Dict[Slot, str]):
+        return ExpoInfoMaterialAction(user_id=user_id, props=props, slots=slots)
+
+    @staticmethod
+    def _get_about_collection_action(user_id, props: dict, slots: Dict[Slot, str]):
+        return AboutCollectionObject(user_id=user_id, props=props, slots=slots)
 
 if __name__ == '__main__':
     dm = DialogueManager()
-    user_one, user_two = 1, 2
+    user_one, user_two = '1', '2'
 
-    print(dm.reply(user_one, TextQuery('расскажи про альфреда де дре')))
+    # print(dm.reply(user_one, TextQuery('расскажи про Успение Богоматери')))
+    # print(dm.reply(user_one, TextQuery('как попасть в Искусство Древнего Египта?')))
+
+    # print(dm.reply(user_one, TextQuery('расскажи про альфреда де дре')))
     # print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
     # print(dm.reply(user_one, TextQuery('как проехать до музея?')))
     # print(dm.reply(user_one, TextQuery('красная площадь')))

@@ -6,7 +6,9 @@ class Slot(Enum):
     NameProfession = 'profession'  # фотограф, скульптор, пейзажист....
     Address = 'address'
     SomeNameDetected = 'some_name'  # произвольное имя
-    Materials = 'materials'
+    Material = 'material'
     Hall = 'hall'  # номер холла
     ArtName = 'art_name'  # название произведения искусства
-    ArtType = 'art_type'  # скульптура, фотография, ...
+    ArtType = 'type'  # скульптура, фотография, ...
+    Image = 'img'
+    Country = 'country'

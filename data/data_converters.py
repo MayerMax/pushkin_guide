@@ -1,6 +1,6 @@
 import json
 
-with open('./data/objects.json', 'r') as f:
+with open('data/objects.json', 'r') as f:
     data = json.load(f)
 #
 data_as_list = [data[key] for key in data]
@@ -33,7 +33,7 @@ for element in data_as_list:
     new_object['graphics_type'] = element['graphics_type']['ru'] if element['graphics_type'] and element['graphics_type']['ru'] else 'empty'
     new_object['hall'] = element['hall'] if 'hall' in element and element['hall'] else 'empty'
     new_object['material'] = element['material']['ru'] if element['material']['ru'] else 'empty'
-    new_object['name'] = element['name']['ru'] if element['name']['ru'] else 'empty'
+    new_object['art_name'] = element['name']['ru'] if element['name']['ru'] else 'empty'
     new_object['get_year'] = element['get_year'] if element['get_year'] else 'empty'
     new_object['period_text'] = element['period']['text'] if element['period']['text'] else 'empty'
     new_object['show_in_collection'] = element['show_in_collection']
@@ -43,15 +43,14 @@ for element in data_as_list:
     new_object['type'] = element['type']['ru']
     new_object['year'] = element['year']
 
-    if new_object['name'] == 'Парк Монсо (Parc de Monceaux)':
-        continue
     new_objects.append(new_object)
 
-print(set([x['material'] for x in new_objects]))
+# print(set([x['from'] for x in new_objects]))
+
 # print([x['graphics_type'] for x in new_objects if x['graphics_type'] != 'empty' ][:10])
 
-# from elasticsearch import Elasticsearch, helpers
+from elasticsearch import Elasticsearch, helpers
 # #
-# es = Elasticsearch()
+es = Elasticsearch()
 # #
-# index = helpers.bulk(es, new_objects, index='collection-index', doc_type='people')
+index = helpers.bulk(es, new_objects, index='collection-index', doc_type='people')
