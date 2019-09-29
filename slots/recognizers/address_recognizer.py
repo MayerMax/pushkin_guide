@@ -9,4 +9,4 @@ class AddressRecognizer(AbstractSlotRecognizer):
     recognized_types = [TextQuery]
 
     def recognize(self, query: TextQuery) -> typing.Dict[Slot, str]:
-        return {Slot.Address: ''}
+        return {}

@@ -55,11 +55,11 @@ class FAQAction(AbstractAction):
                                           props={'question_category': question_category,
                                                  'is_museum_specific': is_museum_specific})
 
-    def reply(self, query: TextQuery = None) -> SingleTextResponse:
+    def reply(self, query: TextQuery = None, user_id=None) -> SingleTextResponse:
         if self._props['is_museum_specific']:
             are_correct_details = False
             while not are_correct_details:
-                query = yield SingleTextWithFactAttachments(is_finished=False,
+                query, slots = yield SingleTextWithFactAttachments(is_finished=False,
                                      is_successful=False,
                                      text='Пожалуйста, уточните, для какого здания музея вам нужна эта информация',
                                      attachments=list(self.MUSEUM_BUILDINGS))
