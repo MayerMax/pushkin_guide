@@ -75,7 +75,7 @@ class InsideNavigationAction(AbstractAction):
             query, slots = yield SingleTextResponse(is_finished=False,
                                              is_successful=True,
                                              text=f'Скажите, находитесь ли вы сейчас в холле "{previous_location}"?')
-            if query not in ['да', 'верно', 'ага']:
+            if query.lower() not in ['да', 'верно', 'ага']:
                 previous_location_changed = True
 
         if previous_location_changed or not previous_location:
