@@ -13,7 +13,7 @@ from utils import clean_html
 class AboutEventAction(AbstractAction):
     recognized_types = [TextQuery]
     triggering_phrases = ['когда приедет выставка', 'когда будет', 'когда начнется', 'когда начнутся', 'программа',
-                          'программа выставки']
+                          'программа выставки', 'как купить', 'как попасть на выставку']
 
     def __init__(self, props: dict, slots: Dict[Slot, str], es_params: dict = None, user_id=None):
         super().__init__(props=props, slots=slots, user_id=user_id)

@@ -63,7 +63,7 @@ class InsideNavigationAction(AbstractAction):
 
     @classmethod
     def reply(cls, slots: Dict[Slot, str], user_id=None) -> Union[SingleTextWithFactAttachments, SingleTextResponse]:
-        hall = slots.get(Slot.Hall)
+        hall = slots.get(Slot.HallName)
 
         if not hall:
             yield cls.FALLBACK_RESPONSE
@@ -82,7 +82,7 @@ class InsideNavigationAction(AbstractAction):
             _, slots = yield SingleTextResponse(is_finished=False,
                                              is_successful=True,
                                              text='Пожалуйста, уточните, в каком холле вы сейчас находитесь.')
-            previous_location = slots.get(Slot.Hall)
+            previous_location = slots.get(Slot.HallName)
             if not previous_location:
                 yield cls.FALLBACK_RESPONSE
 

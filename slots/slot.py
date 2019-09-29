@@ -8,6 +8,7 @@ class Slot(Enum):
     SomeNameDetected = 'some_name'  # произвольное имя
     Material = 'material'
     Hall = 'hall'  # номер холла
+    HallName = 'hall_name'
     ArtName = 'art_name'  # название произведения искусства
     ArtType = 'type'  # скульптура, фотография, ...
     Image = 'img'

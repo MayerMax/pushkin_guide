@@ -83,10 +83,10 @@ class DialogueManager:
                                     FAQAction: self.__general_faq_action,
                                     AboutArtistAction: self._get_about_artist_action,
                                     AboutCollectionObject: self._get_about_collection_action,
-                                    RouteAction: self._get_route_action,
-                                    InsideNavigationAction: self._get_inside_navigation_action,
                                     ExpoInfoMaterialAction: self._get_expo_info,
                                     AboutEventAction: self._get_about_event,
+                                    RouteAction: self._get_route_action,
+                                    InsideNavigationAction: self._get_inside_navigation_action,
                                     DefaultAnswerAction: self._get_default_response}
 
     def reply(self, user_id: str, query: AbstractQuery) -> AbstractResponse:
@@ -109,6 +109,7 @@ class DialogueManager:
                     activation_response = action_class.activation_response(query, slots)
                     if activation_response:  # TODO always return activation
                         # разные action-ы имеют разные конструкторы
+                        print(action_class)
                         return self._actions_call_order[action_class](props=activation_response.props, slots=slots,
                                                                       user_id=user_id)
 
@@ -159,13 +160,15 @@ class DialogueManager:
 if __name__ == '__main__':
     dm = DialogueManager()
     user_one, user_two = '1', '2'
-
+    print(dm.reply(user_one, TextQuery('привет')))
     # print(dm.reply(user_one, TextQuery('расскажи про Успение Богоматери')))
     print(dm.reply(user_one, TextQuery('расскажи про девочку на шаре')))
-    # print(dm.reply(user_one, TextQuery('когда будет выставка про Русский Йорданс')))
+    # print(dm.reply(user_one, TextQuery('как попасть на выставку Русский Йорданс')))
     # print(dm.reply(user_one, TextQuery('когда будет лекция про искусство древней греции')))
 
-    # print(dm.reply(user_one, TextQuery('как попасть в Искусство Древнего Египта?')))
+    print(dm.reply(user_one, TextQuery('как попасть в Искусство Древнего Египта?')))
+    print(dm.reply(user_one, TextQuery('греческий дворик')))
+    # print(dm.reply(user_one, TextQuery('да')))
 
     print(dm.reply(user_one, TextQuery('хочу узнать про пабло пикассо')))
     # print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
@@ -174,4 +177,3 @@ if __name__ == '__main__':
 
     # print(dm.reply(user_one, TextQuery('как звали жену Пушкина?')))
     # print(dm.reply(user_two, TextQuery('расскажи про пушкина')))
-    print(dm.reply(user_two, TextQuery('пошла в жопу мышь')))
