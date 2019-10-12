@@ -30,7 +30,7 @@ def get_response(request: PreprocessedRequest) -> VkResponse:
     try:
         LOCK_2.acquire()
         try:
-            response = DM.reply(str(request.user_id), TextQuery(request_text))
+            response = DM.reply(str(request.user_id), TextQuery(request_text.lower()))
             response_text = response.to_key_value_format()['text']
             return VkResponse(text=response_text, image_url=request.image_url, user_id=request.user_id)
         finally:
