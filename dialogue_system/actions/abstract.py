@@ -37,8 +37,8 @@ class DummyHelloAction(AbstractAction):
         # TODO
 
     def reply(self, slots: Dict[Slot, str], user_id=None) -> SingleTextResponse:
-        yield SingleTextResponse(is_finished=True, is_successful=True, text='Привет! Я виртуалньый '
-                                                                            'помощник Наталья по Пушкинскому музею и готова тебе помочь в любой момент!')
+        yield SingleTextResponse(is_finished=True, is_successful=True, text='Привет! Я виртуальный '
+                                                                            'помощник Наталья по Пушкинскому музею и готова Вам помочь в любой момент!')
 
 
 class DummyYouKnowWhoIsPushkin(AbstractAction):
