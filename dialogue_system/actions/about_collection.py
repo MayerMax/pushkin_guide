@@ -54,6 +54,6 @@ class AboutCollectionObject(AbstractAction):
 
         if output["_source"]['img']:
             yield SingleImageResponse(is_finished=True, is_successful=True, text=text,
-                                      img_url=output["_source"]['img'], img_description=descr)
+                                      img_url=f'https://pushkinmuseum.art{output["_source"]["img"]}', img_description=descr)
         else:
             yield SingleTextResponse(is_finished=True, is_successful=True, text=f'{text}\n{descr}')

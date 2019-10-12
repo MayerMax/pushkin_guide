@@ -16,7 +16,8 @@ class SlotsFiller:
             FuzzyTextRecognizer(search_slot=Slot.ArtName,
                                 additional_slots_to_get=[Slot.ArtType, Slot.Hall, Slot.Image, Slot.Material],
                                 min_threshold=7),
-            FuzzyTextRecognizer(search_slot=Slot.Material, min_threshold=4.20)
+            FuzzyTextRecognizer(search_slot=Slot.Material, min_threshold=4.20),
+            FuzzyTextRecognizer(search_slot=Slot.EventName, min_threshold=5.8, index_name='event-index')
         ]
 
     def enrich(self, query: AbstractQuery, previous_slots = None):
@@ -24,5 +25,4 @@ class SlotsFiller:
         for recognizer in self._available_recognizers:
             if type(query) in recognizer.recognized_types:
                 extracted_slots.update(recognizer.recognize(query))
-
         return extracted_slots

@@ -2,7 +2,9 @@ from typing import Optional
 from collections import namedtuple
 
 from dialogue_system.actions.about_collection import AboutCollectionObject
+from dialogue_system.actions.about_event import AboutEventAction
 from dialogue_system.actions.abstract import AbstractAction, DummyHelloAction, DummyYouKnowWhoIsPushkin
+from dialogue_system.actions.default_response_action import DefaultAnswerAction
 from dialogue_system.actions.expo_info import ExpoInfoMaterialAction
 from dialogue_system.actions.faq import FAQAction
 from dialogue_system.actions.about_artist import AboutArtistAction
@@ -29,7 +31,9 @@ class ActiveUsersManager:
         RouteAction: 0,
         InsideNavigationAction: 4,
         ExpoInfoMaterialAction: 0,
-        AboutCollectionObject: 0
+        AboutCollectionObject: 0,
+        AboutEventAction: 0,
+        DefaultAnswerAction: 0
     }
 
     def __init__(self):
@@ -54,7 +58,8 @@ class ActiveUsersManager:
         if not response.is_successful:
             self._num_negative_counts_to_call[user_id] += 1
 
-        if self._num_negative_counts_to_call[user_id] > self.max_retry_counts[type(self._user_action_dict[user_id].action)]:
+        if self._num_negative_counts_to_call[user_id] > self.max_retry_counts[
+            type(self._user_action_dict[user_id].action)]:
             self.remove(user_id)
             return None
 
@@ -77,11 +82,13 @@ class DialogueManager:
         self._actions_call_order = {DummyHelloAction: self.__dummy_hello_action,
                                     DummyYouKnowWhoIsPushkin: self.__dummy_you_know_who_is_pushkin,
                                     FAQAction: self.__general_faq_action,
-                                    AboutCollectionObject: self._get_about_collection_action,
                                     AboutArtistAction: self._get_about_artist_action,
+                                    AboutCollectionObject: self._get_about_collection_action,
+                                    ExpoInfoMaterialAction: self._get_expo_info,
+                                    AboutEventAction: self._get_about_event,
                                     RouteAction: self._get_route_action,
                                     InsideNavigationAction: self._get_inside_navigation_action,
-                                    ExpoInfoMaterialAction: self._get_expo_info}
+                                    DefaultAnswerAction: self._get_default_response}
 
     def reply(self, user_id: str, query: AbstractQuery) -> AbstractResponse:
         try:
@@ -100,21 +107,24 @@ class DialogueManager:
                                       'Извините, что-то пошло не так. Спросите меня, пожалуйста, по-другому')
 
     def __find_suitable_action(self, user_id, query: AbstractQuery) -> AbstractAction:
-        slots = self._slot_filler.enrich(query)
-        for action_class in self._actions_call_order:
-            if type(query) in action_class.recognized_types:
-                activation_response = action_class.activation_response(query, slots)
-                if activation_response:  # TODO always return activation
-                    # разные action-ы имеют разные конструкторы
-                    return self._actions_call_order[action_class](props=activation_response.props, slots=slots,
-                                                                  user_id=user_id)
+        try:
+            slots = self._slot_filler.enrich(query)
+            for action_class in self._actions_call_order:
+                if type(query) in action_class.recognized_types:
+                    activation_response = action_class.activation_response(query, slots)
+                    if activation_response:  # TODO always return activation
+                        # разные action-ы имеют разные конструкторы
+                        print(action_class)
+                        return self._actions_call_order[action_class](props=activation_response.props, slots=slots,
+                                                                      user_id=user_id)
 
-                    # TODO видимо, самым последним вариантов будет болталка, которая всегда сработает
-        raise ValueError('Сейчас нет болталки, пришло незнакомое сообщение')
+                        # TODO видимо, самым последним вариантов будет болталка, которая всегда сработает
+        except Exception as e:
+            return self._actions_call_order[DefaultAnswerAction](props={}, slots={}, user_id=user_id)
 
     @staticmethod
     def __general_faq_action(user_id, props: dict, slots: Dict[Slot, str]):
-        return  FAQAction(user_id=user_id, props=props)
+        return FAQAction(user_id=user_id, props=props)
 
     @staticmethod
     def __dummy_hello_action(user_id, props: dict, slots: Dict[Slot, str]):
@@ -129,33 +139,46 @@ class DialogueManager:
         return AboutArtistAction(user_id=user_id, props=props, slots=slots)
 
     @staticmethod
-    def _get_route_action(user_id, props:dict, slots: Dict[Slot, str]):
+    def _get_route_action(user_id, props: dict, slots: Dict[Slot, str]):
         return RouteAction(user_id=user_id, props=props, slots=slots)
 
     @staticmethod
-    def _get_inside_navigation_action(user_id, props:dict, slots: Dict[Slot, str]):
+    def _get_inside_navigation_action(user_id, props: dict, slots: Dict[Slot, str]):
         return InsideNavigationAction(user_id=user_id, props=props, slots=slots)
 
     @staticmethod
-    def _get_expo_info(user_id, props:dict, slots: Dict[Slot, str]):
+    def _get_expo_info(user_id, props: dict, slots: Dict[Slot, str]):
         return ExpoInfoMaterialAction(user_id=user_id, props=props, slots=slots)
 
     @staticmethod
     def _get_about_collection_action(user_id, props: dict, slots: Dict[Slot, str]):
         return AboutCollectionObject(user_id=user_id, props=props, slots=slots)
 
+    @staticmethod
+    def _get_about_event(user_id, props: dict, slots: Dict[Slot, str]):
+        return AboutEventAction(user_id=user_id, props=props, slots=slots)
+
+    @staticmethod
+    def _get_default_response(user_id, props: dict, slots: Dict[Slot, str]):
+        return DefaultAnswerAction(user_id=user_id, props=props, slots=slots)
+
 if __name__ == '__main__':
     dm = DialogueManager()
     user_one, user_two = '1', '2'
-
+    print(dm.reply(user_one, TextQuery('привет')))
     # print(dm.reply(user_one, TextQuery('расскажи про Успение Богоматери')))
-    # print(dm.reply(user_one, TextQuery('как попасть в Искусство Древнего Египта?')))
+    print(dm.reply(user_one, TextQuery('расскажи про девочку на шаре')))
+    # print(dm.reply(user_one, TextQuery('как попасть на выставку Русский Йорданс')))
+    # print(dm.reply(user_one, TextQuery('когда будет лекция про искусство древней греции')))
 
-    # print(dm.reply(user_one, TextQuery('расскажи про альфреда де дре')))
+    print(dm.reply(user_one, TextQuery('как попасть в Искусство Древнего Египта?')))
+    print(dm.reply(user_one, TextQuery('греческий дворик')))
+    # print(dm.reply(user_one, TextQuery('да')))
+
+    print(dm.reply(user_one, TextQuery('хочу узнать про пабло пикассо')))
     # print(dm.reply(user_one, TextQuery('расскажи про пушкина')))
     # print(dm.reply(user_one, TextQuery('как проехать до музея?')))
     # print(dm.reply(user_one, TextQuery('красная площадь')))
 
     # print(dm.reply(user_one, TextQuery('как звали жену Пушкина?')))
     # print(dm.reply(user_two, TextQuery('расскажи про пушкина')))
-    # print(dm.reply(user_two, TextQuery('ну и все')))

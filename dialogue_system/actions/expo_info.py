@@ -13,7 +13,7 @@ from slots.slot import Slot
 class ExpoInfoMaterialAction(AbstractAction):
     recognized_types = [TextQuery]
     triggering_phrases = ['хочу найти что-то', 'хочу посмотреть', 'что посмотреть', 'хочу найти что-нибудь', 'xочу найти что-то об',
-                          'что в музее есть', 'где посомтреть', 'расскажи про', 'что есть по', 'что есть из']
+                          'что в музее есть', 'где посомтреть', 'расскажи про', 'что есть по', 'что есть из', 'что у вас есть']
 
     def __init__(self, props: dict, slots: Dict[Slot, str], es_params: dict = None, user_id=None):
         super().__init__(props=props, slots=slots, user_id=user_id)

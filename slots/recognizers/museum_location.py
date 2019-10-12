@@ -15,5 +15,5 @@ class HallRecognizer(AbstractSlotRecognizer):
         query = ' '.join(normalize(token) for token in tokenize(query))
         for hall in HALLS:
             if ' '.join(normalize(token) for token in tokenize(hall.area.title)) in query:
-                slots[Slot.Hall] = hall.area.title
+                slots[Slot.HallName] = hall.area.title
         return slots
