@@ -1,3 +1,5 @@
+import traceback
+from logging import Logger
 from typing import Optional
 from collections import namedtuple
 
@@ -20,6 +22,9 @@ from slots.slot import Slot
 from slots.slots_filler import SlotsFiller
 
 DynamicResponse = namedtuple('DynamicResponse', ['action', 'replier'])
+
+
+logger = Logger('dm')
 
 
 class ActiveUsersManager:
@@ -103,6 +108,7 @@ class DialogueManager:
                     return self.reply(user_id, query)
                 return response
         except:
+            logger.exception(traceback.format_exc())
             return SingleTextResponse(True, True,
                                       'Извините, что-то пошло не так. Спросите меня, пожалуйста, по-другому')
 
