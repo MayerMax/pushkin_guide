@@ -33,8 +33,10 @@ def get_response(request: PreprocessedRequest) -> VkResponse:
             response = DM.reply(str(request.user_id), TextQuery(request_text))
             response_text = response.to_key_value_format()['text']
             return VkResponse(text=response_text, image_url=request.image_url, user_id=request.user_id)
-        except:
+        finally:
             LOCK_2.release()
     except:
+        return VkResponse(text=None, image_url=None, user_id=request.user_id)
+    finally:
         LOCK_1.release()
-    return VkResponse(text=None, image_url=None, user_id=request.user_id)
+

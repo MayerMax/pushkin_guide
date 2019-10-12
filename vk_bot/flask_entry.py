@@ -56,12 +56,15 @@ def create_app() -> Flask:
     @app.route('/', methods=['POST'])
     def entry():
         json_data = request.json
-        handler = TYPE_HANDLERS.get(json_data.get('type'))
-        if handler:
-            response_text = handler(json_data)
-            return response_text
+        try:
+            handler = TYPE_HANDLERS.get(json_data.get('type'))
+            if handler:
+                response_text = handler(json_data)
+                return response_text
 
-        print(f'unknown request type: {json_data.get("type")}')
+            print(f'unknown request type: {json_data.get("type")}')
+        except Exception as e:
+            print(f'Exception is occured: {e}')
         return r'ok'
 
     return app
